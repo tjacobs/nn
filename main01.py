@@ -3,16 +3,25 @@ def main():
 	print("Neural network")
 
 	# Params
-	p = [0, 1, 1, 1, 2, 2, -3, -3, 4, 4]
+	p0 = 0
+	p1 = 1
+	p2 = 1
+	p3 = 1
+	p10 = 2
+	p11 = 2
+	p20 = -3
+	p21 = -3
+	p30 = 4
+	p31 = 4
 
 	# Input
 	x = 5;
 
 	# Network
-	h1 = a(p[4] * x + p[5])
-	h2 = a(p[6] * x + p[7])
-	h3 = a(p[8] * x + p[9])
-	y = p[0] + (p[1] * h1) + (p[2] * h2) + (p[3] * h3)
+	h1 = a(p10 * x + p11)
+	h2 = a(p20 * x + p21)
+	h3 = a(p30 * x + p31)
+	y = p0 + (p1 * h1) + (p2 * h2) + (p3 * h3)
 
 	# Output
 	print(f"Output: {y=}")
