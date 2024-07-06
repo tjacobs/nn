@@ -5,7 +5,6 @@ def main():
 	print("Neural network")
 
 	# Params
-	p_output  = [0, 1, 1, 1]
 	p_weights = [[2, -3, 4], [1, 1, 1]]
 	p_biases  = [[2, -3, 4], [0, 0, 0]]
 
@@ -13,7 +12,7 @@ def main():
 	x_values = np.linspace(-5, 5, 100)
 
 	# Calculate corresponding y values
-	y_values = [calculate_y(x, p_weights, p_biases, p_output) for x in x_values]
+	y_values = [calculate_y(x, p_weights, p_biases) for x in x_values]
 
 	# Output
 	print(f"Output: {y_values=}")
@@ -22,7 +21,7 @@ def main():
 	plot(x_values, y_values)
 
 # Network
-def calculate_y(x, p_weights, p_biases, p_output):
+def calculate_y(x, p_weights, p_biases):
 	# Start with inputs
 	hs = x
 
