@@ -18,10 +18,10 @@ def main():
 	x = 5;
 
 	# Network
-	h1 = p10 * x + p11
-	h2 = p20 * x + p21
-	h3 = p30 * x + p31
-	y = p0 + (p1 * a(h1)) + (p2 * a(h2)) + (p3 * a(h3))
+	h1 = a(p10 * x + p11)
+	h2 = a(p20 * x + p21)
+	h3 = a(p30 * x + p31)
+	y = p0 + (p1 * h1) + (p2 * h2) + (p3 * h3)
 
 	# Output
 	print(f"Output: {y=}")
