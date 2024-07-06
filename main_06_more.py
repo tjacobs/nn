@@ -12,7 +12,7 @@ def main():
 	x_values = np.linspace(-5, 5, 100)
 
 	# Calculate corresponding y values
-	y_values = [calculate_y(x, p_weights, p_biases) for x in x_values]
+	y_values = [calculate_y(x, p_weights, p_biases)[0] for x in x_values]
 
 	# Output
 	print(f"Output: {y_values=}")
