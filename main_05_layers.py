@@ -23,7 +23,7 @@ def main():
 
 # Network
 def calculate_y(x, p_weights, p_biases, p_output):
-	# Start with inputs
+	# Hiddens start with inputs
 	hs = x
 
 	# For each layer, calculate an array of that layer's node outputs, just one layer to start
