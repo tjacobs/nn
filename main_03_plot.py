@@ -30,8 +30,7 @@ def calculate_y(x, p):
 # Activation function
 def a(x):
 	# ReLU
-	if x < 0: x = 0
-	return x
+	return np.maximum(0, x)
 
 # Plot
 def plot(x_values, y_values):
