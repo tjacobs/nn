@@ -31,7 +31,7 @@ def calculate_y(x, p_weights, p_biases, p_output):
 # Activation function
 def a(x):
 	# ReLU
-    return np.maximum(0, x)
+	return np.maximum(0, x)
 
 # Plot
 def plot(x_values, y_values):
