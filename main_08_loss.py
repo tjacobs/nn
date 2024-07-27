@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import math as math
 
 def main():
 	print("Neural network")
@@ -43,18 +44,23 @@ def print_forward_and_loss(x_values, p_weights, p_biases, training_data_y):
 		y = forward(x, p_weights, p_biases)
 		y_values[i] = y
 
-		# Calculate loss
-		loss = y - training_data_y[i]
+		# Calculate loss as difference squared (so always positive)
+		loss = (y - training_data_y[i]) ** 2
 		total_loss += loss
 
 		# Print
 		print(f"{i}:\tX: {x}, \tY: {y}, \tData: {training_data_y[i]}, \tLoss: {loss}")
 
-	# Plot
-	plot(x_values, y_values, training_data_y)
+	# Square root total loss
+	total_loss = math.sqrt(total_loss)
 
 	# Print
 	print(f"Total loss: {total_loss}")
+
+	# Plot
+	plot(x_values, y_values, training_data_y)
+
+	# Return
 	return y_values, total_loss
 
 
