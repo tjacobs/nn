@@ -17,13 +17,20 @@ def main():
 	print((x_values))
 	print(len(x_values))
 
-	# Calculate corresponding y values
+	# Calculate corresponding y values and plot
 	y_values = [calculate_y(x, p_weights, p_biases)[0] for x in x_values]
+	plot(x_values, y_values, training_data_y)
 
-	# Output
-	print(f"Output: {y_values=}")
+	# Update params
+	p_weights[0][0] = 4
+	p_weights[0][1] = -1
+	p_weights[0][2] = 40
+	p_weights[1][0] = 4
+	p_weights[1][1] = -1
+	p_weights[1][2] = 0.4
 
-	# Plot the line
+	# Calculate corresponding y values and plot
+	y_values = [calculate_y(x, p_weights, p_biases)[0] for x in x_values]
 	plot(x_values, y_values, training_data_y)
 
 # Network
