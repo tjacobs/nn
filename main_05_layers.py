@@ -1,9 +1,13 @@
+# Neural network
+# (c) Tom Jacobs
+#
+# 05: Layers
+# Adds the ability to have many layers of hidden nodes, but we just start with one layer
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 def main():
-	print("Neural network")
-
 	# Params
 	p_output  = [0, 1, 1, 1]
 	p_weights = [[2, -3, 4]]
