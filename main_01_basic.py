@@ -1,9 +1,10 @@
 # Neural network
-
+# (c) Tom Jacobs
+#
+# 01: Basic
+# Shows how to run a neural network calculation
 
 def main():
-	print("Neural network")
-
 	# Params
 	p0 = 0
 	p1 = 1
