@@ -8,7 +8,7 @@ def main():
 
     # Params
     np.random.seed(10)  # For reproducibility
-    n_neurons = 50
+    n_neurons = 10
     p_weights = [
         np.random.randn(n_neurons, 1),  # First hidden layer weights
         np.random.randn(1, n_neurons)   # Output layer weights
