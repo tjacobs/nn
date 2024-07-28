@@ -64,7 +64,7 @@ def forward_and_loss(x_values, p_weights, p_biases, training_data_y):
         # Compute the gradient of the loss with respect to the network output y
         gradient_loss_y = 2 * (y - training_data_y[i]) # dL/dy, the 2 * is from the ^2 derived
         for layer in reversed(range(len(p_weights))):
-        	# Calculate derivative of the ReLU function, 1 for positive values
+        	# Calculate derivative of the ReLU function, 1 for positive values, 0 otherwise, times gradient of loss
             grad_h = gradient_loss_y * (layer_outputs[layer] > 0).astype(np.float64)  
 
             # Accumulate the bias gradient
