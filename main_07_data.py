@@ -1,9 +1,13 @@
+# Neural network
+# (c) Tom Jacobs
+#
+# 07: Data
+# Adds lots of training data and plots it, and shows updating params
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 def main():
-	print("Neural network")
-
 	# Training data
 	training_data_y = [1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 6, 7, 6, 5, 4, 5, 6, 7, 6, 5, 4, 2, 1, 4, 6, 4, 3, 3, 2]
 	data_len = len(training_data_y)
@@ -30,6 +34,7 @@ def main():
 	p_weights[1][2] = 0.4
 
 	# Calculate corresponding y values and plot
+	print("After updating p_weights:")
 	y_values = [calculate_y(x, p_weights, p_biases)[0] for x in x_values]
 	plot(x_values, y_values, training_data_y)
 
