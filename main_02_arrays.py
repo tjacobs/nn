@@ -1,9 +1,13 @@
 # Neural network
+# (c) Tom Jacobs
+#
+# 02: Arrays
+# Shows how to run a neural network calculation
+# Adds the usage of arrays
 
+import numpy as np
 
 def main():
-	print("Neural network")
-
 	# Params
 	p = [0, 1, 1, 1, 2, 2, -3, -3, 4, 4]
 
