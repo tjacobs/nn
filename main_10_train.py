@@ -1,3 +1,9 @@
+# Neural network
+# (c) Tom Jacobs
+#
+# 10: Train
+# Trains the network using the calculated gradients and a learning rate, the whole training data set at once to start
+
 import matplotlib.pyplot as plt
 import numpy as np
 
