@@ -57,7 +57,7 @@ def forward_and_loss(x_values, p_weights, p_biases, training_data_y):
         y_values[i] = y
 
         # Calculate loss as difference squared (so it is always positive)
-        loss = ( - training_data_y[i]) ** 2
+        loss = (y - training_data_y[i]) ** 2
         total_loss += loss
 
         # Backward pass: calculate gradients
