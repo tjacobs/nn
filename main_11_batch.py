@@ -15,9 +15,6 @@ epochs = 100000
 # Training data
 training_data_y = [1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 6]
 
-# Batch index state
-index_data = 0
-
 # Generate points between 0 and data_len, and space to store y values to plot
 data_len = len(training_data_y)
 x_values = np.linspace(0, data_len - 1, data_len)
@@ -37,27 +34,33 @@ def main():
     ]
 
     # Plot initial
-    total_loss, gradients_w, gradients_b = forward_and_loss(p_weights, p_biases, get_data, data_len)
+    total_loss, gradients_w, gradients_b = forward_and_loss(p_weights, p_biases, get_data, data_len, 0)
     plot(x_values, y_values, training_data_y)
 
     # Train
     for epoch in range(epochs + 1):
-        # Get values, loss, and gradients
-        total_loss, gradients_w, gradients_b = forward_and_loss(p_weights, p_biases, get_data, batch_size)
+        # Clear total loss for this epoch
+        total_loss = 0
+
+        # For each batch, so increment data index by batch_size
+        for index in range(0, data_len, batch_size):
+            batch_loss, gradients_w, gradients_b = forward_and_loss(p_weights, p_biases, get_data, batch_size, index)
+            total_loss += batch_loss
+
+            # Update weights and biases using gradients from this batch
+            for layer in range(len(p_weights)):
+                p_weights[layer] -= learning_rate * gradients_w[layer]
+                p_biases[layer] -= learning_rate * gradients_b[layer]
 
         # Print
         if epoch % 100 == 0: print(f"Epoch {epoch}, loss: {total_loss}")
 
-        # Update weights and biases using gradients
-        for layer in range(len(p_weights)):
-            p_weights[layer] -= learning_rate * gradients_w[layer]
-            p_biases[layer] -= learning_rate * gradients_b[layer]
 
     # Plot results
     plot(x_values, y_values, training_data_y)
 
 # Calculate forward values and loss and gradients
-def forward_and_loss(p_weights, p_biases, get_data_function, batch_size_requested):
+def forward_and_loss(p_weights, p_biases, get_data_function, batch_size_requested, index):
     global y_values
 
     # Init items to 0
@@ -66,7 +69,7 @@ def forward_and_loss(p_weights, p_biases, get_data_function, batch_size_requeste
     gradients_b = [np.zeros_like(b, dtype=np.float64) for b in p_biases]
 
     # Get batch of data
-    data_x, data_y = get_data_function(batch_size_requested)
+    data_x, data_y = get_data_function(batch_size_requested, index)
 
     # For each x value in this batch
     for i in range(len(data_x)):
@@ -127,11 +130,10 @@ def activation(x):
     # ReLU
     return np.maximum(0, x)
 
-def get_data(length):
-    global index_data
+def get_data(length, index_data):
     xs, ys = x_values[index_data:index_data + length], training_data_y[index_data:index_data + length]
-    index_data += length
-    if index_data >= len(training_data_y): index_data = 0
+#    index_data += length
+#    if index_data >= len(training_data_y): index_data = 0
     return xs, ys
 
 # Plot
