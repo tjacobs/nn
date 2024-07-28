@@ -1,9 +1,13 @@
+# Neural network
+# (c) Tom Jacobs
+#
+# 06: More
+# Uses more layers in the network
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 def main():
-	print("Neural network")
-
 	# Params
 	p_weights = [[2, -3, 4], [1, 1, 1]]
 	p_biases  = [[2, -3, 4], [0, 0, 0]]
