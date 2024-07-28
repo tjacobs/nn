@@ -1,3 +1,9 @@
+# Neural network
+# (c) Tom Jacobs
+#
+# 11: Batch
+# Shows taking batches of data from the training data to train on, converges much faster, see the learning rate, for stochastic gradient descent
+
 import matplotlib.pyplot as plt
 import numpy as np
 
