@@ -34,7 +34,7 @@ def main():
     ]
 
     # Plot initial
-    total_loss, gradients_w, gradients_b = forward_and_loss(p_weights, p_biases, get_data, data_len, 0)
+    forward_and_loss(p_weights, p_biases, get_data, data_len, 0)
     plot(x_values, y_values, training_data_y)
 
     # Train
@@ -132,8 +132,6 @@ def activation(x):
 
 def get_data(length, index_data):
     xs, ys = x_values[index_data:index_data + length], training_data_y[index_data:index_data + length]
-#    index_data += length
-#    if index_data >= len(training_data_y): index_data = 0
     return xs, ys
 
 # Plot
