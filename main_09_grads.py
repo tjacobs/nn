@@ -1,3 +1,9 @@
+# Neural network
+# (c) Tom Jacobs
+#
+# 09: Grads
+# Calculates gradients with respect to each parameter, be warned, math and matrix time!
+
 import matplotlib.pyplot as plt
 import numpy as np
 
