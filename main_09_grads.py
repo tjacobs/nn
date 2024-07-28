@@ -7,34 +7,32 @@ def main():
     data_len = len(training_data_y)
 
     # Params
-    p_weights = [np.array([[2], [-3], [4]], dtype=np.float64), np.array([[1, 1, 1]], dtype=np.float64)]
-    p_biases  = [np.array([2, -3, 4], dtype=np.float64), np.array([0], dtype=np.float64)]
+    p_weights = [np.array([[0.1], [-0.6], [0.4]], dtype=np.float64), np.array([[-0.2, 0.5, 0.3]], dtype=np.float64)]
+    p_biases  = [np.array([0.4, -0.2, -0.8], dtype=np.float64), np.array([0.5], dtype=np.float64)]
+
+    # Training settings
+    learning_rate = 0.0000001
+    epochs = 10000
 
     # Generate points between 0 and data_len
     x_values = np.linspace(0, data_len - 1, data_len)
 
-    # Training settings
-    learning_rate = 0.0000001
-    epochs = 1000
-
     # Train
     for epoch in range(epochs + 1):
 
-        if epoch <= 2: print(p_weights)
-
         # Get values, loss, and gradients
         y_values, total_loss, gradients_w, gradients_b = forward_and_loss(x_values, p_weights, p_biases, training_data_y)
+
+        # Plot first values
+        if epoch == 0: plot(x_values, y_values, training_data_y)
+
+        # Print
+        if epoch < 2 or epoch % 100 == 0: print(f"Epoch {epoch}, loss: {total_loss}\n {p_weights[0]}")
 
         # Update weights and biases using gradients
         for layer in range(len(p_weights)):
             p_weights[layer] -= learning_rate * gradients_w[layer]
             p_biases[layer] -= learning_rate * gradients_b[layer]
-
-
-        # Print
-        if epoch % 100 == 0:
-            print(f"Epoch {epoch}, loss: {total_loss}")
-            print(p_weights)
 
     # Plot results
     plot(x_values, y_values, training_data_y)
@@ -70,16 +68,15 @@ def forward_and_loss(x_values, p_weights, p_biases, training_data_y):
             # Accumulate the bias gradient
             gradients_b[layer] += grad_h
 
-            # Computes the gradient of the loss with respect to the weights of the first layer.
-            # Accumulate these gradients over all x data points
-            if layer == 0:       gradients_w[layer] += grad_h[:, np.newaxis] * x # Reshape grad_h to a column vector
+            # Compute the gradient of the loss with respect to the weights of the first layer, accumulate these gradients over all x data points
+            if layer == 0: gradients_w[layer] += grad_h[:, np.newaxis] * x # Reshape grad_h to a column vector
 
-            # Computes the outer product of grad_h and the outputs of the previous layer.
-			# layer_outputs[layer-1] is the output from the previous layer (i.e., input to the current layer).
-			# reshape(-1) flattens the previous layer's output to ensure proper shape for the outer product.
-            else:                gradients_w[layer] += np.outer(grad_h, layer_outputs[layer-1].reshape(-1))
+            # Compute the outer product of grad_h and the outputs of the previous layer
+			# The layer_outputs[layer-1] is the output from the previous layer (i.e., input to the current layer)
+			# and reshape(-1) flattens the previous layer's output to ensure proper shape for the outer product
+            else:          gradients_w[layer] += np.outer(grad_h, layer_outputs[layer-1].reshape(-1))
 
-            # Compute the gradient of the loss with respect to the inputs of the current layer (to propagate it backward to the previous layer).
+            # Compute the gradient of the loss with respect to the inputs of the current layer (to propagate it backward to the previous layer)
             gradient_loss_y = np.dot(p_weights[layer].T, grad_h)
 
     # Return
@@ -87,23 +84,23 @@ def forward_and_loss(x_values, p_weights, p_biases, training_data_y):
 
 # Network
 def forward(x, p_weights, p_biases):
-    # Start with inputs
-    hs = np.array([x], dtype=np.float64)
-    layer_outputs = []
+    # Start with input
+    layer_output = np.array([x], dtype=np.float64)
 
     # For each layer, calculate an array of that layer's node outputs
+    layer_outputs = []
     for layer in range(len(p_weights)):
-        hs = a(np.dot(p_weights[layer], hs) + p_biases[layer])
-        layer_outputs.append(hs)
+        layer_output = activation(np.dot(p_weights[layer], layer_output) + p_biases[layer])
+        layer_outputs.append(layer_output)
 
-    # Get output
-    y = sum(hs)
+    # Get output of last layer by summing values
+    y = sum(layer_output)
 
     # Output value and layer outputs
     return y, layer_outputs
 
 # Activation function
-def a(x):
+def activation(x):
     # ReLU
     return np.maximum(0, x)
 
