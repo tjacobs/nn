@@ -12,11 +12,6 @@ def main():
 	p_weights = [[2, -3, 4], [1, 1, 1]]
 	p_biases  = [[2, -3, 4], [0, 0, 0]]
 
-	# Looks like this 
-	#     /--2-\-/-1--\
-	# x >---_3--X--1--+--> y 
-	#     \--4-/-\-1--/
-
 	# Generate points between 0 and 30
 	x_values = np.linspace(0, data_len-1, data_len)
 	print((x_values))
