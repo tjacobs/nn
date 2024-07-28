@@ -1,9 +1,13 @@
+# Neural network
+# (c) Tom Jacobs
+#
+# 04: Dot
+# Converts params to weights and biases and runs dot product on them
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 def main():
-	print("Neural network")
-
 	# Params
 	p_output  = [0, 1, 1, 1]
 	p_weights = [2, -3, 4]
