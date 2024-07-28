@@ -3,23 +3,30 @@ import numpy as np
 
 def main():
     # Training data
-    training_data_y = [1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 6, 7, 6, 5, 4, 5, 6, 7, 6, 5, 4, 2, 1, 4, 6, 4, 3, 3, 2]
+    training_data_y = [1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 6]
     data_len = len(training_data_y)
 
     # Params
-    p_weights = [np.array([[0.1], [-0.6], [0.4]], dtype=np.float64), np.array([[-0.2, 0.5, 0.3]], dtype=np.float64)]
-    p_biases  = [np.array([0.4, -0.2, -0.8], dtype=np.float64), np.array([0.5], dtype=np.float64)]
+    np.random.seed(10)  # For reproducibility
+    n_neurons = 50
+    p_weights = [
+        np.random.randn(n_neurons, 1),  # First hidden layer weights
+        np.random.randn(1, n_neurons)   # Output layer weights
+    ]
+    p_biases  = [
+        np.random.randn(n_neurons),     # First hidden layer biases
+        np.random.randn(1)              # Output layer biases
+    ]
 
     # Training settings
-    learning_rate = 0.0000001
-    epochs = 10000
+    learning_rate = 0.000015
+    epochs = 100000
 
     # Generate points between 0 and data_len
     x_values = np.linspace(0, data_len - 1, data_len)
 
     # Train
     for epoch in range(epochs + 1):
-
         # Get values, loss, and gradients
         y_values, total_loss, gradients_w, gradients_b = forward_and_loss(x_values, p_weights, p_biases, training_data_y)
 
@@ -27,7 +34,7 @@ def main():
         if epoch == 0: plot(x_values, y_values, training_data_y)
 
         # Print
-        if epoch < 2 or epoch % 100 == 0: print(f"Epoch {epoch}, loss: {total_loss}\n {p_weights[0]}")
+        if epoch < 2 or epoch % 100 == 0: print(f"Epoch {epoch}, loss: {total_loss}") #\n {p_weights[0]}")
 
         # Update weights and biases using gradients
         for layer in range(len(p_weights)):
@@ -93,8 +100,8 @@ def forward(x, p_weights, p_biases):
         layer_output = activation(np.dot(p_weights[layer], layer_output) + p_biases[layer])
         layer_outputs.append(layer_output)
 
-    # Get output of last layer by summing values
-    y = sum(layer_output)
+    # Get output
+    y = layer_output[0]
 
     # Output value and layer outputs
     return y, layer_outputs
