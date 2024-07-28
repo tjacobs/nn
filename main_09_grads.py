@@ -4,10 +4,9 @@ import numpy as np
 def main():
     # Training data
     training_data_y = [1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 6]
-    data_len = len(training_data_y)
 
     # Params
-    np.random.seed(10)  # For reproducibility
+    np.random.seed(10)                  # For reproducibility
     n_neurons = 10
     p_weights = [
         np.random.randn(n_neurons, 1),  # First hidden layer weights
@@ -23,6 +22,7 @@ def main():
     epochs = 100000
 
     # Generate points between 0 and data_len
+    data_len = len(training_data_y)
     x_values = np.linspace(0, data_len - 1, data_len)
 
     # Train
