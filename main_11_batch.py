@@ -7,21 +7,21 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Training settings
+learning_rate = 0.001
+batch_size = 3
+epochs = 100000
+
 # Training data
 training_data_y = [1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 6]
 
-# Generate points between 0 and data_len, space to store y values to plot
+# Batch index state
+index_data = 0
+
+# Generate points between 0 and data_len, and space to store y values to plot
 data_len = len(training_data_y)
 x_values = np.linspace(0, data_len - 1, data_len)
 y_values = np.zeros(data_len)
-
-# Training settings
-learning_rate = 0.001
-epochs = 100000
-
-# Batches
-batch_size = 3
-index_data = 0
 
 def main():
     # Params
