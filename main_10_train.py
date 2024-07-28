@@ -34,7 +34,7 @@ def main():
         if epoch == 0: plot(x_values, y_values, training_data_y)
 
         # Print
-        if epoch < 2 or epoch % 100 == 0: print(f"Epoch {epoch}, loss: {total_loss}") #\n {p_weights[0]}")
+        if epoch < 2 or epoch % 100 == 0: print(f"Epoch {epoch}, loss: {total_loss}")
 
         # Update weights and biases using gradients
         for layer in range(len(p_weights)):
