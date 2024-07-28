@@ -17,31 +17,31 @@ def main():
         np.random.randn(1)              # Output layer biases
     ]
 
-    # Training settings
-    learning_rate = 0.000015
-    epochs = 100000
-
     # Generate points between 0 and data_len
     data_len = len(training_data_y)
     x_values = np.linspace(0, data_len - 1, data_len)
 
-    # Train
-    for epoch in range(epochs + 1):
-        # Get values, loss, and gradients
-        y_values, total_loss, gradients_w, gradients_b = forward_and_loss(x_values, p_weights, p_biases, training_data_y)
+    # Get values, loss, and gradients
+    y_values, total_loss, gradients_w, gradients_b = forward_and_loss(x_values, p_weights, p_biases, training_data_y)
 
-        # Plot first values
-        if epoch == 0: plot(x_values, y_values, training_data_y)
+    # Print
+    print(f"Weights:\n{p_weights}")
+    print(f"Loss: {total_loss}\n")
+    plot(x_values, y_values, training_data_y)
 
-        # Print
-        if epoch < 2 or epoch % 100 == 0: print(f"Epoch {epoch}, loss: {total_loss}") #\n {p_weights[0]}")
+    # Update weights and biases using gradients
+    learning_rate = 0.000015
+    for layer in range(len(p_weights)):
+        p_weights[layer] -= learning_rate * gradients_w[layer]
+        p_biases[layer] -= learning_rate * gradients_b[layer]
 
-        # Update weights and biases using gradients
-        for layer in range(len(p_weights)):
-            p_weights[layer] -= learning_rate * gradients_w[layer]
-            p_biases[layer] -= learning_rate * gradients_b[layer]
+    # Get values, loss, and gradients
+    y_values, total_loss, gradients_w, gradients_b = forward_and_loss(x_values, p_weights, p_biases, training_data_y)
 
-    # Plot results
+    # Print
+    print(f"After subtracting gradients:")
+    print(f"Weights: {p_weights}")
+    print(f"Loss: {total_loss}")
     plot(x_values, y_values, training_data_y)
 
 # Calculate forward values and loss and gradients
