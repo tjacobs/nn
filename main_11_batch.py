@@ -30,16 +30,17 @@ def main():
         np.random.randn(1)              # Output layer biases
     ]
 
+    # Plot initial
+    total_loss, gradients_w, gradients_b = forward_and_loss(p_weights, p_biases, get_data, data_len)
+    plot(x_values, y_values, training_data_y)
+
     # Train
     for epoch in range(epochs + 1):
         # Get values, loss, and gradients
-        y_values, total_loss, gradients_w, gradients_b = forward_and_loss(x_values, p_weights, p_biases, get_data)
-
-        # Plot first values
-        if epoch == 0: plot(x_values, y_values, training_data_y)
+        total_loss, gradients_w, gradients_b = forward_and_loss(p_weights, p_biases, get_data, batch_size)
 
         # Print
-        if epoch < 2 or epoch % 100 == 0: print(f"Epoch {epoch}, loss: {total_loss}") #\n {p_weights[0]}")
+        if epoch % 100 == 0: print(f"Epoch {epoch}, loss: {total_loss}")
 
         # Update weights and biases using gradients
         for layer in range(len(p_weights)):
@@ -50,7 +51,7 @@ def main():
     plot(x_values, y_values, training_data_y)
 
 # Calculate forward values and loss and gradients
-def forward_and_loss(x_values, p_weights, p_biases, get_data_function):
+def forward_and_loss(p_weights, p_biases, get_data_function, batch_size_requested):
     global y_values
 
     # Init items to 0
@@ -59,9 +60,9 @@ def forward_and_loss(x_values, p_weights, p_biases, get_data_function):
     gradients_b = [np.zeros_like(b, dtype=np.float64) for b in p_biases]
 
     # Get batch of data
-    data_x, data_y = get_data_function()
+    data_x, data_y = get_data_function(batch_size_requested)
 
-    # For each x value
+    # For each x value in this batch
     for i in range(len(data_x)):
         # Get x value
         x = data_x[i]
@@ -96,7 +97,7 @@ def forward_and_loss(x_values, p_weights, p_biases, get_data_function):
             gradient_loss_y = np.dot(p_weights[layer].T, grad_h)
 
     # Return
-    return y_values, total_loss, gradients_w, gradients_b
+    return total_loss, gradients_w, gradients_b
 
 # Network
 def forward(x, p_weights, p_biases):
@@ -120,10 +121,10 @@ def activation(x):
     # ReLU
     return np.maximum(0, x)
 
-def get_data():
+def get_data(length):
     global index_data
-    xs, ys = x_values[index_data:index_data + batch_size], training_data_y[index_data:index_data + batch_size]
-    index_data += batch_size
+    xs, ys = x_values[index_data:index_data + length], training_data_y[index_data:index_data + length]
+    index_data += length
     if index_data >= len(training_data_y): index_data = 0
     return xs, ys
 
