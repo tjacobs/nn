@@ -1,3 +1,9 @@
+# Neural network
+# (c) Tom Jacobs
+#
+# 08: Loss
+# Calculates the loss, i.e. how different the model predicts to the training data
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -22,6 +28,7 @@ def main():
     p_weights[0][2] = -3
 
     # Forward pass: calculate y values and total loss
+    print("After updating p_weights:")
     y_values, total_loss = print_forward_and_loss(x_values, p_weights, p_biases, training_data_y)
 
 def print_forward_and_loss(x_values, p_weights, p_biases, training_data_y):
