@@ -55,7 +55,6 @@ def main():
         # Print
         if epoch % 100 == 0: print(f"Epoch {epoch}, loss: {total_loss}")
 
-
     # Plot results
     plot(x_values, y_values, training_data_y)
 
