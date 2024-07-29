@@ -8,19 +8,22 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Training settings
-learning_rate = 0.0000001
+learning_rate = 0.001
 batch_size = 3
 epochs = 100000
-
-# Neural network params
-n_neurons = 50
 
 # For reproducibility
 np.random.seed(10) 
 
+# Training data
+data_len = 12
+training_data_y = [1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 6]
+
 # Generate training data
-data_len = 24
-training_data_y = (np.random.randn(data_len, 1) * 10) + 20
+#training_data_y = (np.random.randn(data_len, 1) * 2) + 1
+
+# Neural network params
+n_neurons = 10
 
 # Generate points between 0 and data_len, and space to store y values to plot
 x_values = np.linspace(0, data_len - 1, data_len)
@@ -36,7 +39,6 @@ def main():
         np.random.randn(n_neurons),     # First hidden layer biases
         np.random.randn(1)              # Output layer biases
     ]
-    #plot(range(data_len), p_biases[0], p_biases[0])
 
     # Plot initial
     forward_and_loss(p_weights, p_biases, get_data, data_len, 0)
@@ -58,10 +60,7 @@ def main():
                 p_biases[layer] -= learning_rate * gradients_b[layer]
 
         # Print
-        if epoch % 100 == 0: 
-            print(f"Epoch {epoch}, loss: {total_loss}")
-            #print("Weights: ", p_weights)
-            #print("Biases: ", p_biases)
+        if epoch % 100 == 0: print(f"Epoch {epoch}, loss: {total_loss}")
 
     # Plot results
     plot(x_values, y_values, training_data_y)
