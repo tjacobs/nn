@@ -5,7 +5,6 @@
 # Shows taking batches of data from the training data to train on, converges much faster, see the learning rate, for stochastic gradient descent
 
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 import numpy as np
 
 # Training settings
@@ -21,16 +20,6 @@ data_len = len(training_data_y)
 x_values = np.linspace(0, data_len - 1, data_len)
 y_values = np.zeros(data_len)
 
-# Create plot
-fig, ax = plt.subplots(figsize=(8, 6))
-line1, = ax.plot(x_values, y_values, label='Neural Network Output')
-line2, = ax.plot(x_values, training_data_y, label='Actual')
-ax.set_title("Output")
-ax.set_xlabel('Input (x)')
-ax.set_ylabel('Output (y)')
-ax.grid(True)
-ax.legend()
-
 def main():
     # Params
     np.random.seed(10)                  # For reproducibility
@@ -44,11 +33,18 @@ def main():
         np.random.randn(1)              # Output layer biases
     ]
 
-    # Define update function
-    def update(epoch):
-        # Reference these from above function
-        nonlocal p_weights, p_biases
+    # Create graph
+    fig, ax = plt.subplots(figsize=(8, 6))
+    line1, = ax.plot(x_values, y_values, label='Neural Network Output')
+    line2, = ax.plot(x_values, training_data_y, label='Actual')
+    ax.set_title("Output")
+    ax.set_xlabel('Input (x)')
+    ax.set_ylabel('Output (y)')
+    ax.grid(True)
+    ax.legend()
 
+    # Training loop
+    for epoch in range(epochs + 1):
         # Clear total loss for this epoch
         total_loss = 0
 
@@ -62,17 +58,14 @@ def main():
                 p_weights[layer] -= learning_rate * gradients_w[layer]
                 p_biases[layer] -= learning_rate * gradients_b[layer]
 
-        # Print every 100 epochs
-        if epoch % 100 == 0: print(f"Epoch {epoch}, loss: {total_loss}")
-
-        # Update plot
-        y_values[:] = [forward(x, p_weights, p_biases)[0] for x in x_values]
+        # Update graph
         line1.set_ydata(y_values)
-        return line1,
+        fig.canvas.draw()
+        plt.pause(0.001)
 
-    # Run
-    ani = animation.FuncAnimation(fig, update, frames=epochs, blit=True, repeat=False)
-    plt.show()
+        # Print every 100 epochs
+        if epoch % 10 == 0:
+            print(f"Epoch {epoch}, loss: {total_loss}")
 
 # Calculate forward values and loss and gradients
 def forward_and_loss(p_weights, p_biases, get_data_function, batch_size_requested, index):
