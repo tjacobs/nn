@@ -5,12 +5,13 @@
 # Shows taking batches of data from the training data to train on, converges much faster, see the learning rate, for stochastic gradient descent
 
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 import numpy as np
 
 # Training settings
 learning_rate = 0.001
 batch_size = 3
-epochs = 100000
+epochs = 1000
 
 # Training data
 training_data_y = [1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 6]
@@ -19,6 +20,16 @@ training_data_y = [1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 6]
 data_len = len(training_data_y)
 x_values = np.linspace(0, data_len - 1, data_len)
 y_values = np.zeros(data_len)
+
+# Create plot
+fig, ax = plt.subplots(figsize=(8, 6))
+line1, = ax.plot(x_values, y_values, label='Neural Network Output')
+line2, = ax.plot(x_values, training_data_y, label='Actual')
+ax.set_title("Output")
+ax.set_xlabel('Input (x)')
+ax.set_ylabel('Output (y)')
+ax.grid(True)
+ax.legend()
 
 def main():
     # Params
@@ -33,16 +44,15 @@ def main():
         np.random.randn(1)              # Output layer biases
     ]
 
-    # Plot initial
-    forward_and_loss(p_weights, p_biases, get_data, data_len, 0)
-    plot(x_values, y_values, training_data_y)
+    # Define update function
+    def update(epoch):
+        # Reference these from above function
+        nonlocal p_weights, p_biases
 
-    # Train
-    for epoch in range(epochs + 1):
         # Clear total loss for this epoch
         total_loss = 0
 
-        # For each batch, so increment data index by batch_size
+        # For each batch, increment data index by batch_size
         for index in range(0, data_len, batch_size):
             batch_loss, gradients_w, gradients_b = forward_and_loss(p_weights, p_biases, get_data, batch_size, index)
             total_loss += batch_loss
@@ -52,11 +62,17 @@ def main():
                 p_weights[layer] -= learning_rate * gradients_w[layer]
                 p_biases[layer] -= learning_rate * gradients_b[layer]
 
-        # Print
+        # Print every 100 epochs
         if epoch % 100 == 0: print(f"Epoch {epoch}, loss: {total_loss}")
 
-    # Plot results
-    plot(x_values, y_values, training_data_y)
+        # Update plot
+        y_values[:] = [forward(x, p_weights, p_biases)[0] for x in x_values]
+        line1.set_ydata(y_values)
+        return line1,
+
+    # Run
+    ani = animation.FuncAnimation(fig, update, frames=epochs, blit=True, repeat=False)
+    plt.show()
 
 # Calculate forward values and loss and gradients
 def forward_and_loss(p_weights, p_biases, get_data_function, batch_size_requested, index):
@@ -87,7 +103,7 @@ def forward_and_loss(p_weights, p_biases, get_data_function, batch_size_requeste
         # Compute the gradient of the loss with respect to the network output y
         gradient_loss_y = 2 * (y - data_y[i]) # dL/dy, the 2 * is from the ^2 derived
         for layer in reversed(range(len(p_weights))):
-        	# Calculate derivative of the ReLU function, 1 for positive values, 0 otherwise, times gradient of loss
+            # Calculate derivative of the ReLU function, 1 for positive values, 0 otherwise, times gradient of loss
             grad_h = gradient_loss_y * (layer_outputs[layer] > 0).astype(np.float64)  
 
             # Accumulate the bias gradient
@@ -97,8 +113,8 @@ def forward_and_loss(p_weights, p_biases, get_data_function, batch_size_requeste
             if layer == 0: gradients_w[layer] += grad_h[:, np.newaxis] * x # Reshape grad_h to a column vector
 
             # Compute the outer product of grad_h and the outputs of the previous layer
-			# The layer_outputs[layer-1] is the output from the previous layer (i.e., input to the current layer)
-			# and reshape(-1) flattens the previous layer's output to ensure proper shape for the outer product
+            # The layer_outputs[layer-1] is the output from the previous layer (i.e., input to the current layer)
+            # and reshape(-1) flattens the previous layer's output to ensure proper shape for the outer product
             else:          gradients_w[layer] += np.outer(grad_h, layer_outputs[layer-1].reshape(-1))
 
             # Compute the gradient of the loss with respect to the inputs of the current layer (to propagate it backward to the previous layer)
@@ -129,21 +145,10 @@ def activation(x):
     # ReLU
     return np.maximum(0, x)
 
+# Data loader function
 def get_data(length, index_data):
     xs, ys = x_values[index_data:index_data + length], training_data_y[index_data:index_data + length]
     return xs, ys
-
-# Plot
-def plot(x_values, y_values, y_real):
-    plt.figure(figsize=(8, 6))
-    plt.plot(x_values, y_values, label='Neural Network Output')
-    plt.plot(x_values, y_real, label='Actual')
-    plt.title("Output")
-    plt.xlabel('Input (x)')
-    plt.ylabel('Output (y)')
-    plt.grid(True)
-    plt.legend()
-    plt.show()
 
 # Run main    
 if __name__ == "__main__":
