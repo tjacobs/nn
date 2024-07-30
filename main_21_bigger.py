@@ -13,13 +13,14 @@ import random
 
 # Training settings
 learning_rate = 0.001
-batch_size = 30
 epochs = 10000
 
 # Training data
-data_len = 120
+data_len = 6
+np.random.seed(0)
 #training_data_y = torch.tensor([1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 2], dtype=torch.float32)
 training_data_y = torch.tensor(((np.random.randn(data_len, 1) * 2) + 1), dtype=torch.float32)
+batch_size = data_len // 4
 
 # Generate points between 0 and data_len, and space to store y values to plot
 data_len = len(training_data_y)
@@ -27,7 +28,7 @@ x_values = torch.linspace(0, data_len - 1, data_len)
 y_values = torch.zeros(data_len)
 
 # Network size
-n_nodes = 240
+n_nodes = 12
 
 # Define neural network
 class SimpleNN(nn.Module):
