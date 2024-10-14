@@ -13,12 +13,11 @@ import random
 
 # Training settings
 learning_rate = 0.001
-epochs = 10000
+epochs = 3000
 
 # Training data
 data_len = 6
 np.random.seed(0)
-#training_data_y = torch.tensor([1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 2], dtype=torch.float32)
 training_data_y = torch.tensor(((np.random.randn(data_len, 1) * 2) + 1), dtype=torch.float32)
 batch_size = data_len // 4
 
@@ -97,7 +96,6 @@ def main():
 
 # Define data loading function
 def get_data(batch_size, index):
-    #index = int(random.random() * 4) * 3
     xs = x_values[index:index + batch_size].unsqueeze(1) # Add a dimension
     ys = training_data_y[index:index + batch_size].unsqueeze(1)
     return xs, ys
