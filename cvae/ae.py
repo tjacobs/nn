@@ -8,6 +8,7 @@ from torch.utils.data import Dataset, DataLoader
 from torch.optim import Adam
 from matplotlib import pyplot as plt
 import pandas as pd
+import numpy as np
 
 torch.manual_seed(0)
 
@@ -75,7 +76,7 @@ plt.figure(figsize = (1, 1))
 batch_n = 0
 plt.imshow(X[batch_n].numpy().reshape(28,28),cmap='gray')
 plt.title(map_labels[str(int(y[batch_n]))])
-plt.pause(1)
+plt.pause(2)
 
 # Device is metal
 device = 'mps' if torch.backends.mps.is_available() else 'cpu'
@@ -96,7 +97,7 @@ opt = Adam(autoencoder.parameters(), lr=1e-3)
 loss_func = nn.MSELoss()
 
 # Training loop
-train = True
+train = False
 if train:
     for epoch in range(n_epochs):
         for batch_idx, (x, y) in enumerate(dl):
@@ -128,19 +129,27 @@ x = x.to(torch.float).to(device)
 x_reconstructed = autoencoder(x)
 plt.figure(figsize = (1, 1))
 plt.imshow(x_reconstructed.cpu().detach().numpy().reshape(28, 28), cmap='gray')
-plt.pause(5)
+plt.pause(2)
 
-# Generate new clothes
-print("Showing generated clothes")
-z = torch.tensor([0, 0]).to(torch.float32).to(device)
-x_reconstructed = autoencoder.generate(z)
-plt.figure(figsize = (1, 1))
-plt.imshow(x_reconstructed.cpu().detach().numpy().reshape(28, 28), cmap='gray')
-plt.pause(5)
+# Define grid range and resolution
+print("\nShowing grid of generated clothes")
+z_min, z_max, steps = -3, 30, 10  # Adjust range and resolution as needed
+z_values = np.linspace(z_min, z_max, steps)
 
-# Generate new clothes
-z = torch.tensor([0, 1]).to(torch.float32).to(device)
-x_reconstructed = autoencoder.generate(z)
-plt.figure(figsize = (1, 1))
-plt.imshow(x_reconstructed.cpu().detach().numpy().reshape(28, 28), cmap='gray')
-plt.pause(5)
+# Create grid of latent vectors
+latent_grid = torch.tensor([[x, y] for x in z_values for y in z_values]).to(torch.float32).to(device)
+
+# Generate images
+generated_images = autoencoder.generate(latent_grid).cpu().detach().numpy()
+
+# Reshape generated images to 28x28
+generated_images = generated_images.reshape(-1, 28, 28)
+
+# Plot the images in a grid
+fig, axes = plt.subplots(steps, steps, figsize=(10, 10))
+for i in range(steps):
+    for j in range(steps):
+        axes[i, j].imshow(generated_images[i * steps + j], cmap="gray")
+        axes[i, j].axis("off")
+plt.tight_layout()
+plt.show()
