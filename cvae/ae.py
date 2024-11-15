@@ -8,7 +8,6 @@ from torch.utils.data import Dataset, DataLoader
 from torch.optim import Adam
 from matplotlib import pyplot as plt
 import pandas as pd
-from tqdm import tqdm
 
 torch.manual_seed(0)
 
@@ -44,6 +43,9 @@ class AutoEncoder(nn.Module):
       z = self.encoder(x)
       return self.decoder(z)
 
+    def generate(self, z:torch.Tensor):
+      return self.decoder(z)
+
 class FashionMnistDataset(Dataset):
     def __init__(self, csv_file="fmnist/fashion-mnist_train.csv"):
         super().__init__()
@@ -65,20 +67,20 @@ ds = FashionMnistDataset()
 # Create labels
 map_labels = { "0": "T-shirt/top", "1": "Trouser", "2": "Pullover", "3": "Dress", "4": "Coat", "5": "Sandal", "6": "Shirt", "7": "Sneaker", "8": "Bag", "9": "Ankle boot"  }
 
-# Check sizes
+# Show pants
+print("Showing original pants")
 dl = torch.utils.data.DataLoader(ds, batch_size=128, shuffle=True)
 X, y = next(iter(dl))
 plt.figure(figsize = (1, 1))
 batch_n = 0
 plt.imshow(X[batch_n].numpy().reshape(28,28),cmap='gray')
 plt.title(map_labels[str(int(y[batch_n]))])
-print(f"Shape of image batch: {X.shape}, Shape of labels: {y.shape}")
 plt.pause(1)
 
-# Device metal
+# Device is metal
 device = 'mps' if torch.backends.mps.is_available() else 'cpu'
 
-# Data
+# Data loader
 dl = torch.utils.data.DataLoader(ds, batch_size=128, shuffle=True, num_workers=0)
 
 # Model
@@ -94,21 +96,22 @@ opt = Adam(autoencoder.parameters(), lr=1e-3)
 loss_func = nn.MSELoss()
 
 # Training loop
-for epoch in range(n_epochs):
-  for batch_idx, (x, y) in enumerate(dl):
-    x = x.to(torch.float32).to(device)
-    opt.zero_grad()
-    x_hat = autoencoder(x)
-    loss = loss_func(x_hat, x)
-    loss.backward()
-    opt.step()
-    if batch_idx % 1000:
-      print('\rTrain Epoch: {}/{} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-       epoch + 1, n_epochs, batch_idx * len(x), len(dl.dataset), 100.0 * batch_idx / len(dl), loss.cpu().data.item()), end='')
-
-# Save
-model_path = "autoencoder"
-torch.save(autoencoder.state_dict(), model_path)
+train = True
+if train:
+    for epoch in range(n_epochs):
+        for batch_idx, (x, y) in enumerate(dl):
+            x = x.to(torch.float32).to(device)
+            opt.zero_grad()
+            x_hat = autoencoder(x)
+            loss = loss_func(x_hat, x)
+            loss.backward()
+            opt.step()
+            if batch_idx % 1000:
+              print('\rTrain Epoch: {}/{} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+              epoch + 1, n_epochs, batch_idx * len(x), len(dl.dataset), 100.0 * batch_idx / len(dl), loss.cpu().data.item()), end='')
+    # Save
+    model_path = "autoencoder"
+    torch.save(autoencoder.state_dict(), model_path)
 
 # Load saved model
 autoencoder = AutoEncoder()
@@ -118,7 +121,8 @@ autoencoder.to(device)
 # Eval mode, no training info stored
 autoencoder.eval()
 
-# Test data
+# Test putting pants in to see if we get pants out
+print("\nShowing encoded decoded pants")
 x = X[0]
 x = x.to(torch.float).to(device)
 x_reconstructed = autoencoder(x)
@@ -126,3 +130,17 @@ plt.figure(figsize = (1, 1))
 plt.imshow(x_reconstructed.cpu().detach().numpy().reshape(28, 28), cmap='gray')
 plt.pause(5)
 
+# Generate new clothes
+print("Showing generated clothes")
+z = torch.tensor([0, 0]).to(torch.float32).to(device)
+x_reconstructed = autoencoder.generate(z)
+plt.figure(figsize = (1, 1))
+plt.imshow(x_reconstructed.cpu().detach().numpy().reshape(28, 28), cmap='gray')
+plt.pause(5)
+
+# Generate new clothes
+z = torch.tensor([0, 1]).to(torch.float32).to(device)
+x_reconstructed = autoencoder.generate(z)
+plt.figure(figsize = (1, 1))
+plt.imshow(x_reconstructed.cpu().detach().numpy().reshape(28, 28), cmap='gray')
+plt.pause(5)
