@@ -66,13 +66,14 @@ ds = FashionMnistDataset()
 map_labels = { "0": "T-shirt/top", "1": "Trouser", "2": "Pullover", "3": "Dress", "4": "Coat", "5": "Sandal", "6": "Shirt", "7": "Sneaker", "8": "Bag", "9": "Ankle boot"  }
 
 # Check sizes
-#dl = torch.utils.data.DataLoader(ds, batch_size=128, shuffle=True)
-#X, y = next(iter(dl))
-#plt.figure(figsize = (1, 1))
-#batch_n = 0
-#plt.imshow(X[batch_n].numpy().reshape(28,28),cmap='gray')
-#plt.title(map_labels[str(int(y[batch_n]))])
-#print(f"shape of image batch: {X.shape}, Shape of labels: {y.shape}")
+dl = torch.utils.data.DataLoader(ds, batch_size=128, shuffle=True)
+X, y = next(iter(dl))
+plt.figure(figsize = (1, 1))
+batch_n = 0
+plt.imshow(X[batch_n].numpy().reshape(28,28),cmap='gray')
+plt.title(map_labels[str(int(y[batch_n]))])
+print(f"Shape of image batch: {X.shape}, Shape of labels: {y.shape}")
+plt.pause(1)
 
 # Device metal
 device = 'mps' if torch.backends.mps.is_available() else 'cpu'
@@ -101,9 +102,27 @@ for epoch in range(n_epochs):
     loss = loss_func(x_hat, x)
     loss.backward()
     opt.step()
-    if batch_idx % 100:
+    if batch_idx % 1000:
       print('\rTrain Epoch: {}/{} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
        epoch + 1, n_epochs, batch_idx * len(x), len(dl.dataset), 100.0 * batch_idx / len(dl), loss.cpu().data.item()), end='')
 
+# Save
 model_path = "autoencoder"
 torch.save(autoencoder.state_dict(), model_path)
+
+# Load saved model
+autoencoder = AutoEncoder()
+autoencoder.load_state_dict(torch.load('autoencoder', weights_only=True))
+autoencoder.to(device)
+
+# Eval mode, no training info stored
+autoencoder.eval()
+
+# Test data
+x = X[0]
+x = x.to(torch.float).to(device)
+x_reconstructed = autoencoder(x)
+plt.figure(figsize = (1, 1))
+plt.imshow(x_reconstructed.cpu().detach().numpy().reshape(28, 28), cmap='gray')
+plt.pause(5)
+
