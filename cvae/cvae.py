@@ -35,7 +35,7 @@ class ConditionalVariationalEncoder(nn.Module):
         mu = self.layer2(xx)
         sigma = torch.exp(self.layer3(xx)) # exp added to keep sigma positive
         z = mu + sigma * self.gaussian.sample(mu.shape) # we sample gaussian to get latent
-        self.kl = (sigma**2 + mu**2 - torch.log(sigma) - 1/2).sum()
+        self.kl = torch.mean(0.5 * torch.sum(sigma**2 + mu**2 - torch.log(sigma**2 + 1e-8) - 1, dim=1))
         return(z)
 
 class ConditionalVariationalDecoder(nn.Module):
@@ -110,16 +110,18 @@ def main():
     cv_autoencoder = ConditionalVariationalAutoencoder().to(device)
 
     # Training params
-    n_epochs = 1
+    n_epochs = 10
+    lr = 1e-3
+    beta = 1  # KL scaling factor
 
     # Optimizer
-    opt = Adam(cv_autoencoder.parameters(), lr=1e-4)
+    opt = Adam(cv_autoencoder.parameters(), lr=lr)
 
     # Loss is mean square error + KL loss 
-    def loss_func(x_hat, x, autoencoder):
+    def loss_func(x_hat, x, autoencoder, beta=1.0):
         mse_loss = nn.MSELoss()(x_hat, x)
         kl_loss = autoencoder.encoder.kl
-        return mse_loss + kl_loss
+        return mse_loss + beta * kl_loss, mse_loss, kl_loss
 
     # Training loop
     train = True
@@ -128,15 +130,15 @@ def main():
           for batch_idx, (x,y) in enumerate(dl):
             x, y = x.to(torch.float).to(device), y.to(device)
             x_hat = cv_autoencoder(x, y)
-            loss = loss_func(x_hat, x, cv_autoencoder)
+            loss, mse_loss, kl_loss = loss_func(x_hat, x, cv_autoencoder, beta=beta)
+            opt.zero_grad()
             loss.backward()
             opt.step()
-            if batch_idx % 100:
-              print('\r Train Epoch: {}/{} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                epoch+1, n_epochs, batch_idx * len(x), len(dl.dataset), 100.0 * batch_idx / len(dl), loss.cpu().data.item()), end='')
+            if batch_idx % 1000:
+                print(f"\rEpoch [{epoch+1}/{n_epochs}], Batch [{batch_idx+1}/{len(dl)}], Loss: {loss.item():.4f}, MSE: {mse_loss.item():.4f}, KL: {kl_loss.item():.4f}", end='')
 
         # Save
-        print("Saving")
+        print("\nSaving")
         model_path = "cvae"
         torch.save(cv_autoencoder.state_dict(), model_path)
 
@@ -152,7 +154,6 @@ def main():
     print("\nShowing encoded decoded pants")
     x = X[0].to(torch.float32).to(device).unsqueeze(0)
     y = Y[0].to(device).unsqueeze(0)
-    print(f"{y=}")
     x_reconstructed = cv_autoencoder(x, y)
     plt.figure(figsize = (1, 1))
     plt.imshow(x_reconstructed.cpu().detach().numpy().reshape(28, 28), cmap='gray')
@@ -160,7 +161,7 @@ def main():
 
     # Define grid range and resolution
     print("\nShowing grid of generated clothes")
-    z_min, z_max, steps = -3, 30, 10
+    z_min, z_max, steps = -10, 10, 10
     z_values = np.linspace(z_min, z_max, steps)
 
     # Create grid of latent vectors
