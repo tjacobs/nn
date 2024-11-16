@@ -110,9 +110,9 @@ def main():
     cv_autoencoder = ConditionalVariationalAutoencoder().to(device)
 
     # Training params
-    n_epochs = 10
+    n_epochs = 2
     lr = 1e-3
-    beta = 1  # KL scaling factor
+    beta = 0.1  # KL scaling factor
 
     # Optimizer
     opt = Adam(cv_autoencoder.parameters(), lr=lr)
@@ -151,39 +151,46 @@ def main():
     cv_autoencoder.eval()
 
     # Test putting pants in to see if we get pants out
-    print("\nShowing encoded decoded pants")
-    x = X[0].to(torch.float32).to(device).unsqueeze(0)
-    y = Y[0].to(device).unsqueeze(0)
-    x_reconstructed = cv_autoencoder(x, y)
-    plt.figure(figsize = (1, 1))
-    plt.imshow(x_reconstructed.cpu().detach().numpy().reshape(28, 28), cmap='gray')
-    plt.pause(2)
+    if False:
+        print("\nShowing encoded decoded pants")
+        x = X[1].to(torch.float32).to(device).unsqueeze(0)
+        y = Y[1].to(device).unsqueeze(0)
+        x_reconstructed = cv_autoencoder(x, y)
+        plt.figure(figsize = (1, 1))
+        plt.imshow(x_reconstructed.cpu().detach().numpy().reshape(28, 28), cmap='gray')
+        plt.pause(2)
 
-    # Define grid range and resolution
-    print("\nShowing grid of generated clothes")
-    z_min, z_max, steps = -10, 10, 10
-    z_values = np.linspace(z_min, z_max, steps)
+    # Show grids of generation
+    for i in range(10):
+        x = X[i].to(torch.float32).to(device).unsqueeze(0)
+        y = Y[i].to(device).unsqueeze(0)
 
-    # Create grid of latent vectors
-    latent_grid = torch.tensor([[x, y] for x in z_values for y in z_values]).to(torch.float32).to(device)
+        # Define grid range and resolution
+        print("\nShowing grid of generated", map_labels[str(int(Y[i]))])
+        z_min, z_max, steps = -10, 10, 10
+        z_values = np.linspace(z_min, z_max, steps)
 
-    # Repeat condition
-    y = y.repeat(latent_grid.size(0))
+        # Create grid of latent vectors
+        latent_grid = torch.tensor([[x, y] for x in z_values for y in z_values]).to(torch.float32).to(device)
 
-    # Generate images
-    generated_images = cv_autoencoder.generate(latent_grid, y).cpu().detach().numpy()
+        # Repeat condition
+        y = y.repeat(latent_grid.size(0))
 
-    # Reshape generated images to 28x28
-    generated_images = generated_images.reshape(-1, 28, 28)
+        # Generate images
+        generated_images = cv_autoencoder.generate(latent_grid, y).cpu().detach().numpy()
 
-    # Plot the images in a grid
-    fig, axes = plt.subplots(steps, steps, figsize=(10, 10))
-    for i in range(steps):
-        for j in range(steps):
-            axes[i, j].imshow(generated_images[i * steps + j], cmap="gray")
-            axes[i, j].axis("off")
-    plt.tight_layout()
-    plt.show()
+        # Reshape generated images to 28x28
+        generated_images = generated_images.reshape(-1, 28, 28)
+
+        # Plot the images in a grid
+        fig, axes = plt.subplots(steps, steps, figsize=(10, 10))
+        for i in range(steps):
+            for j in range(steps):
+                axes[i, j].imshow(generated_images[i * steps + j], cmap="gray")
+                axes[i, j].axis("off")
+        plt.tight_layout()
+        plt.title(map_labels[str(int(Y[i]))])
+        plt.show()
 
 if __name__ == '__main__':
     main()
